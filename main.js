@@ -3,15 +3,7 @@ const Role = require("./table_scripts/role")
 const Department = require("./table_scripts/department");
 const inquirer = require('inquirer');
 
-
-const express = require('express');
 const mysql = require('mysql2');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 const db = mysql.createConnection(
     {
@@ -29,9 +21,7 @@ const department = new Department(db);
 
 function ascii() {
     console.log(" __        __         _          _                  __  __                                   \r\n \\ \\      \/ \/__  _ __| | ___ __ | | __ _  ___ ___  |  \\\/  | __ _ _ __   __ _  __ _  ___ _ __ \r\n  \\ \\ \/\\ \/ \/ _ \\| \'__| |\/ \/ \'_ \\| |\/ _` |\/ __\/ _ \\ | |\\\/| |\/ _` | \'_ \\ \/ _` |\/ _` |\/ _ \\ \'__|\r\n   \\ V  V \/ (_) | |  |   <| |_) | | (_| | (_|  __\/ | |  | | (_| | | | | (_| | (_| |  __\/ |   \r\n    \\_\/\\_\/ \\___\/|_|  |_|\\_\\ .__\/|_|\\__,_|\\___\\___| |_|  |_|\\__,_|_| |_|\\__,_|\\__, |\\___|_|   \r\n                          |_|                                                |___\/           ")
-    prompts();
 }
-ascii();
 
 function prompts() {
     inquirer.prompt([
@@ -39,7 +29,8 @@ function prompts() {
             type: 'list',
             name: 'choice',
             message: 'What would you like to do?',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', "Quit"]
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Delete a Department',
+                "Add a role", "Quit"]
         },
     ])
         .then((response) =>
@@ -51,22 +42,36 @@ async function handleChoice(response) {
         process.exit();
     }
     if (response.choice === "View All Departments") {
-        await department.viewAll();
+        console.table(await department.getAll());
     } else if (response.choice === "View All Roles") {
         await role.viewAll();
     } else if (response.choice === "View All Employees") {
         await employee.viewAll();
+    } else if (response.choice === "Add a Department") {
+        const name = await askName("departments")
+        await department.createDepartment(name);
+    } else if (response.choice === "Delete a Department") {
+        await department.delete();
+    } else if (response.choice === "Add a Role") {
     }
     prompts();
 }
 
-app.use((req, res) => {
-    res.status(404).end();
-  });
-  
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+async function askName(table) {
+    const response =  await inquirer.prompt([
+        {
+            type: "input",
+            message: `What is the ${table} name?`,
+            name: "name",
+        }
+    ]);
+    return response.name;
+}
+
+
+
+ascii();
+prompts();
 
 
 

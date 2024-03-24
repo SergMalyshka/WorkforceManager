@@ -1,3 +1,5 @@
+const inquirer = require('inquirer');
+
 class Department {
     constructor(db) {
         this.db = db;
@@ -11,9 +13,40 @@ class Department {
         });
     }
 
-    async viewAll() {
-        const result = await this.getAll();
-        console.table(result)
+    async delete() {
+        const allDepts = await this.getAll();
+        const deptNames = allDepts.map((dept) => dept.name)
+        const response = await inquirer.prompt([
+            {
+                type: "list",
+                message: "What department would you like to delete?",
+                name: "name",
+                choices: deptNames
+            }
+        ])
+        
+        return new Promise((resolve) => {
+            this.db.query(`DELETE FROM department WHERE name="${response.name}"`, function (err, result) {
+                resolve(result);
+                if(result.affectedRows === 1) {
+                    console.log(`Successfully deleted ${response.name}`)
+                }
+            })
+        });
+    }
+
+    async createDepartment(name) {
+        return new Promise((resolve) => {
+            const query = `INSERT INTO department (name) VALUES ("${name}")`
+            this.db.query(query, function (err, result) {
+                if(err) {
+                    console.log(err)
+                } else {
+                    console.log(`Added a new department: ${name}`)
+                    resolve(true)
+                }
+            })
+        });
     }
 }
 
