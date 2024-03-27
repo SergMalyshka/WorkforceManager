@@ -30,7 +30,7 @@ function prompts() {
             name: 'choice',
             message: 'What would you like to do?',
             choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Delete a Department',
-                "Add a role", "Quit"]
+                "Add a Role", "Quit"]
         },
     ])
         .then((response) =>
@@ -44,29 +44,19 @@ async function handleChoice(response) {
     if (response.choice === "View All Departments") {
         console.table(await department.getAll());
     } else if (response.choice === "View All Roles") {
-        await role.viewAll();
+        console.table(await role.getAll());
     } else if (response.choice === "View All Employees") {
-        await employee.viewAll();
+        console.table(await employee.getAll());
     } else if (response.choice === "Add a Department") {
-        const name = await askName("departments")
-        await department.createDepartment(name);
+        await department.createDepartment();
     } else if (response.choice === "Delete a Department") {
         await department.delete();
     } else if (response.choice === "Add a Role") {
-    }
+        await role.createRole();
+    } else if (response.choice === "Delete a Role")
     prompts();
 }
 
-async function askName(table) {
-    const response =  await inquirer.prompt([
-        {
-            type: "input",
-            message: `What is the ${table} name?`,
-            name: "name",
-        }
-    ]);
-    return response.name;
-}
 
 
 

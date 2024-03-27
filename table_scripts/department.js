@@ -24,7 +24,7 @@ class Department {
                 choices: deptNames
             }
         ])
-        
+
         return new Promise((resolve) => {
             this.db.query(`DELETE FROM department WHERE name="${response.name}"`, function (err, result) {
                 resolve(result);
@@ -35,14 +35,22 @@ class Department {
         });
     }
 
-    async createDepartment(name) {
+    async createDepartment() {
+        const response =  await inquirer.prompt([
+            {
+                type: "input",
+                message: `What is the departments name?`,
+                name: "name",
+            }
+        ]);
+
         return new Promise((resolve) => {
-            const query = `INSERT INTO department (name) VALUES ("${name}")`
+            const query = `INSERT INTO department (name) VALUES ("${response.name}")`
             this.db.query(query, function (err, result) {
                 if(err) {
                     console.log(err)
                 } else {
-                    console.log(`Added a new department: ${name}`)
+                    console.log(`Added a new department: ${response.name}`)
                     resolve(true)
                 }
             })

@@ -10,11 +10,6 @@ class Employee {
             })
         });
     }
-
-    async viewAll() {
-        const result = await this.getAll();
-        console.table(result)
-    }
 }
 
 module.exports = Employee;
