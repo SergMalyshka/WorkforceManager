@@ -30,7 +30,7 @@ function prompts() {
             name: 'choice',
             message: 'What would you like to do?',
             choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Delete a Department',
-                "Add a Role", "Quit"]
+                "Add a Role", "Delete a Role", "Add a new Employee", "Update Employee Role", "Quit"]
         },
     ])
         .then((response) =>
@@ -52,8 +52,14 @@ async function handleChoice(response) {
     } else if (response.choice === "Delete a Department") {
         await department.delete();
     } else if (response.choice === "Add a Role") {
-        await role.createRole();
-    } else if (response.choice === "Delete a Role")
+        await role.createRole(department);
+    } else if (response.choice === "Delete a Role") {
+        await role.delete();
+    } else if (response.choice === "Add a new Employee") {
+        await employee.addEmployee(role)
+    } else if (response.choice === "Update Employee Role") {
+        await employee.update(role)
+    }
     prompts();
 }
 
